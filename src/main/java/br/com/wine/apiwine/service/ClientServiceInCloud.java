@@ -10,6 +10,8 @@ import java.util.*;
 
 public class ClientServiceInCloud {
 
+    // TODO: - implementar repository utilizando arquivo
+    //       - pegar dados de um .csv para clientes e de um .json ou .csv para compras (preferencia para .csv)
     private ClientInCloudRepository clientRepository;
     private PurchaseServiceInCloud purchaseServiceInCloud;
 
@@ -22,9 +24,10 @@ public class ClientServiceInCloud {
         return clientRepository.getAll();
     }
 
+    // TODO: Reescrever este método usando api funcional do JAVA
     public List<Client> getClientsSortedByMaxSpent() {
         List<Purchase> purchases = purchaseServiceInCloud.getAll();
-        ArrayList<TempClient> clientsWithExpended = new ArrayList<>();
+        ArrayList<TempClient> clientsWithExpended = new ArrayList<>();//nomenclatura da classe TempClient
         List<Client> clients = getAll();
         List<Client> sortedClients = new ArrayList<>();
 

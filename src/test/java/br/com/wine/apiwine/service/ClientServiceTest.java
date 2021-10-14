@@ -39,6 +39,12 @@ public class ClientServiceTest {
         assertEquals(fakeClients.get(0).getId(), clients.get(1).getId());
     }
 
+    // TODO: - Acrescentar mais clientes para testar
+    //       - Criar teste com lista de compras que não tenham todos os clientes
+    //       - Criar teste com lista de compras vazia
+    //       - Criar teste onde não exista nenhum cliente
+    //       - Criar teste com compra de clientes que não existem na lista de clientes
+
 //    @Test
 //    void shouldThrowExceptionIfNoClient() {
 //        when(mockedClientInCloudRepository.getAll()).thenReturn(null);

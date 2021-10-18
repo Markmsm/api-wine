@@ -2,7 +2,7 @@ package br.com.wine.apiwine.controller;
 
 import br.com.wine.apiwine.data.model.Client;
 import br.com.wine.apiwine.data.model.Wine;
-import br.com.wine.apiwine.service.ClientServiceInCloud;
+import br.com.wine.apiwine.service.ClientService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -12,9 +12,9 @@ import java.util.List;
 @RequestMapping("/api/clients/v1")
 public class ClientController {
 
-    private ClientServiceInCloud service;
+    private ClientService service;
 
-    public ClientController(ClientServiceInCloud service) {
+    public ClientController(ClientService service) {
         this.service = service;
     }
 

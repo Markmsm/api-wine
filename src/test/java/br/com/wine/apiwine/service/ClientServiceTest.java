@@ -1,12 +1,13 @@
 package br.com.wine.apiwine.service;
 
 import br.com.wine.apiwine.data.model.*;
-import br.com.wine.apiwine.repository.ClientInCloudRepository;
+import br.com.wine.apiwine.repository.ClientRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -14,26 +15,27 @@ import static org.mockito.Mockito.when;
 
 public class ClientServiceTest {
 
-    static ClientInCloudRepository mockedClientInCloudRepository;
+    static ClientRepository mockedClientRepository;
     static PurchaseServiceInCloud mockedPurchaseServiceInCloud;
-    static ClientServiceInCloud clientServiceInCloud;
+    static ClientService clientService;
     static PurchaseCreator purchaseCreator;
 
     @BeforeAll
     static void setUp() {
-        mockedClientInCloudRepository = mock(ClientInCloudRepository.class);
+        mockedClientRepository = mock(ClientRepository.class);
         mockedPurchaseServiceInCloud = mock(PurchaseServiceInCloud.class);
-        clientServiceInCloud = new ClientServiceInCloud(mockedClientInCloudRepository, mockedPurchaseServiceInCloud);
+        clientService = new ClientService(mockedClientRepository, mockedPurchaseServiceInCloud);
         purchaseCreator = new PurchaseCreator();
 
-        when(mockedClientInCloudRepository.getAll()).thenReturn(getFakeClients());
+        when(mockedClientRepository.getAll()).thenReturn(getFakeClients());
+//        Lembrar de mudar ClientInCloudRepository por ClientRepository
         when(mockedPurchaseServiceInCloud.getAll()).thenReturn(purchaseCreator.getFakePurchases());
     }
 
     @Test
     void shouldReturnSortedClientsByMaxSpent() {
         List<Client> fakeClients = getFakeClients();
-        List<Client> clients = clientServiceInCloud.getClientsSortedByMaxSpent();
+        List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
         assertEquals(fakeClients.get(1).getId(), clients.get(0).getId());
         assertEquals(fakeClients.get(0).getId(), clients.get(1).getId());
@@ -58,7 +60,7 @@ public class ClientServiceTest {
     @Test
     void shouldReturnClientWithMaxBuyInYear() {
         Client fakeClient = getFakeClients().get(1);
-        Client clientWithMaxBuy = clientServiceInCloud.getClientWithMaxBuyInYear("2016");
+        Client clientWithMaxBuy = clientService.getClientWithMaxBuyInYear("2016");
 
         assertEquals(fakeClient.getId(), clientWithMaxBuy.getId());
     }
@@ -66,7 +68,7 @@ public class ClientServiceTest {
     @Test
     void shouldReturnLoyalClients() {
         Client fakeClient = getFakeClients().get(1);
-        ArrayList<Client> loyalClients = clientServiceInCloud.getLoyalClients();
+        ArrayList<Client> loyalClients = clientService.getLoyalClients();
 
         assertEquals(1, loyalClients.size());
         assertEquals(fakeClient.getId(), loyalClients.get(0).getId());
@@ -94,8 +96,8 @@ public class ClientServiceTest {
         when(mockedPurchaseServiceInCloud.getClientPurchases(fakeClients.get(1).getCpf())).thenReturn(client1Purchases);
         when(mockedPurchaseServiceInCloud.getClientPurchases(fakeClients.get(0).getCpf())).thenReturn(client2Purchases);
 
-        Wine recommendedWineForClient1 = clientServiceInCloud.getRecommendedWine(fakeClients.get(0).getCpf());
-        Wine recommendedWineForClient2 = clientServiceInCloud.getRecommendedWine(fakeClients.get(1).getCpf());
+        Wine recommendedWineForClient1 = clientService.getRecommendedWine(fakeClients.get(0).getCpf());
+        Wine recommendedWineForClient2 = clientService.getRecommendedWine(fakeClients.get(1).getCpf());
 
         assertEquals(fakeWineForClient1.getCodigo(), recommendedWineForClient1.getCodigo());
         assertEquals(fakeWineForClient2.getCodigo(), recommendedWineForClient2.getCodigo());

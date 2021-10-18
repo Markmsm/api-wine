@@ -7,7 +7,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Arrays;
 import java.util.List;
 
-public class ClientInCloudRepository {
+public class ClientInCloudRepository implements ClientRepository {
 
     public List<Client> getAll() {
         RestTemplate restTemplate = new RestTemplate();

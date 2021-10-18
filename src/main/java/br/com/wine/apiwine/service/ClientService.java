@@ -4,18 +4,18 @@ import br.com.wine.apiwine.data.model.Client;
 import br.com.wine.apiwine.data.model.Purchase;
 import br.com.wine.apiwine.data.model.TempClient;
 import br.com.wine.apiwine.data.model.Wine;
-import br.com.wine.apiwine.repository.ClientInCloudRepository;
+import br.com.wine.apiwine.repository.ClientRepository;
 
 import java.util.*;
 
-public class ClientServiceInCloud {
+public class ClientService {
 
     // TODO: - implementar repository utilizando arquivo
     //       - pegar dados de um .csv para clientes e de um .json ou .csv para compras (preferencia para .csv)
-    private ClientInCloudRepository clientRepository;
+    private ClientRepository clientRepository;
     private PurchaseServiceInCloud purchaseServiceInCloud;
 
-    public ClientServiceInCloud(ClientInCloudRepository clientRepository, PurchaseServiceInCloud purchaseServiceInCloud) {
+    public ClientService(ClientRepository clientRepository, PurchaseServiceInCloud purchaseServiceInCloud) {
         this.clientRepository = clientRepository;
         this.purchaseServiceInCloud = purchaseServiceInCloud;
     }

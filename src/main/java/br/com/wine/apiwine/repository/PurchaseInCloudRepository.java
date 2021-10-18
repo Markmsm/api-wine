@@ -2,13 +2,12 @@ package br.com.wine.apiwine.repository;
 
 import br.com.wine.apiwine.data.model.Purchase;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class PurchaseInCloudRepository {
+public class PurchaseInCloudRepository implements PurchaseRepository {
 
 
     public List<Purchase> getAll() {

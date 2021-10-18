@@ -3,8 +3,9 @@ package br.com.wine.apiwine.configuration;
 import br.com.wine.apiwine.repository.ClientInCloudRepository;
 import br.com.wine.apiwine.repository.ClientRepository;
 import br.com.wine.apiwine.repository.PurchaseInCloudRepository;
+import br.com.wine.apiwine.repository.PurchaseRepository;
 import br.com.wine.apiwine.service.ClientService;
-import br.com.wine.apiwine.service.PurchaseServiceInCloud;
+import br.com.wine.apiwine.service.PurchaseService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,8 +14,8 @@ public class WineConfiguration {
 
     @Bean
     ClientService clientServiceInCloud(ClientRepository clientRepository,
-                                       PurchaseServiceInCloud purchaseServiceInCloud) {
-        return new ClientService(clientRepository, purchaseServiceInCloud);
+                                       PurchaseService purchaseService) {
+        return new ClientService(clientRepository, purchaseService);
     }
 
     @Bean
@@ -23,8 +24,8 @@ public class WineConfiguration {
     }
 
     @Bean
-    PurchaseServiceInCloud purchaseService(PurchaseInCloudRepository purchaseInCloudRepository) {
-        return new PurchaseServiceInCloud(purchaseInCloudRepository);
+    PurchaseService purchaseService(PurchaseRepository purchaseRepository) {
+        return new PurchaseService(purchaseRepository);
     }
 
     @Bean

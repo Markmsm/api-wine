@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -16,20 +15,20 @@ import static org.mockito.Mockito.when;
 public class ClientServiceTest {
 
     static ClientRepository mockedClientRepository;
-    static PurchaseServiceInCloud mockedPurchaseServiceInCloud;
+    static PurchaseService mockedPurchaseService;
     static ClientService clientService;
     static PurchaseCreator purchaseCreator;
 
     @BeforeAll
     static void setUp() {
         mockedClientRepository = mock(ClientRepository.class);
-        mockedPurchaseServiceInCloud = mock(PurchaseServiceInCloud.class);
-        clientService = new ClientService(mockedClientRepository, mockedPurchaseServiceInCloud);
+        mockedPurchaseService = mock(PurchaseService.class);
+        clientService = new ClientService(mockedClientRepository, mockedPurchaseService);
         purchaseCreator = new PurchaseCreator();
 
         when(mockedClientRepository.getAll()).thenReturn(getFakeClients());
 //        Lembrar de mudar ClientInCloudRepository por ClientRepository
-        when(mockedPurchaseServiceInCloud.getAll()).thenReturn(purchaseCreator.getFakePurchases());
+        when(mockedPurchaseService.getAll()).thenReturn(purchaseCreator.getFakePurchases());
     }
 
     @Test
@@ -93,8 +92,8 @@ public class ClientServiceTest {
         client2Purchases.add(fakePurchases.get(4));
         client2Purchases.add(fakePurchases.get(5));
 
-        when(mockedPurchaseServiceInCloud.getClientPurchases(fakeClients.get(1).getCpf())).thenReturn(client1Purchases);
-        when(mockedPurchaseServiceInCloud.getClientPurchases(fakeClients.get(0).getCpf())).thenReturn(client2Purchases);
+        when(mockedPurchaseService.getClientPurchases(fakeClients.get(1).getCpf())).thenReturn(client1Purchases);
+        when(mockedPurchaseService.getClientPurchases(fakeClients.get(0).getCpf())).thenReturn(client2Purchases);
 
         Wine recommendedWineForClient1 = clientService.getRecommendedWine(fakeClients.get(0).getCpf());
         Wine recommendedWineForClient2 = clientService.getRecommendedWine(fakeClients.get(1).getCpf());

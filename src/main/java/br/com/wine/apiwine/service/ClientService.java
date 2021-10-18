@@ -13,11 +13,11 @@ public class ClientService {
     // TODO: - implementar repository utilizando arquivo
     //       - pegar dados de um .csv para clientes e de um .json ou .csv para compras (preferencia para .csv)
     private ClientRepository clientRepository;
-    private PurchaseServiceInCloud purchaseServiceInCloud;
+    private PurchaseService purchaseService;
 
-    public ClientService(ClientRepository clientRepository, PurchaseServiceInCloud purchaseServiceInCloud) {
+    public ClientService(ClientRepository clientRepository, PurchaseService purchaseService) {
         this.clientRepository = clientRepository;
-        this.purchaseServiceInCloud = purchaseServiceInCloud;
+        this.purchaseService = purchaseService;
     }
 
     public List<Client> getAll() {
@@ -26,7 +26,7 @@ public class ClientService {
 
     // TODO: Reescrever este método usando api funcional do JAVA
     public List<Client> getClientsSortedByMaxSpent() {
-        List<Purchase> purchases = purchaseServiceInCloud.getAll();
+        List<Purchase> purchases = purchaseService.getAll();
         ArrayList<TempClient> clientsWithExpended = new ArrayList<>();//nomenclatura da classe TempClient
         List<Client> clients = getAll();
         List<Client> sortedClients = new ArrayList<>();
@@ -54,7 +54,7 @@ public class ClientService {
     }
 
     public Client getClientWithMaxBuyInYear(String year) {
-        List<Purchase> purchases = purchaseServiceInCloud.getAll();
+        List<Purchase> purchases = purchaseService.getAll();
         List<Client> clients = getAll();
         Client clientWithHighestBuy = null;
 
@@ -81,7 +81,7 @@ public class ClientService {
     }
 
     public ArrayList<Client> getLoyalClients() {
-        List<Purchase> purchases = purchaseServiceInCloud.getAll();
+        List<Purchase> purchases = purchaseService.getAll();
         List<Client> clients = getAll();
         ArrayList<TempClient> loyalTempClients = new ArrayList<>();
         ArrayList<Client> loyalClients = new ArrayList<>();
@@ -110,7 +110,7 @@ public class ClientService {
     }
 
     public Wine getRecommendedWine(String cpf) {
-        ArrayList<Purchase> purchases = purchaseServiceInCloud.getClientPurchases(cpf);
+        ArrayList<Purchase> purchases = purchaseService.getClientPurchases(cpf);
         Map<Wine, Integer> wines = new HashMap<>();
         Wine recommendedWine = new Wine();
         int countWine = 0;

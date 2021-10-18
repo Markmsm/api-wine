@@ -1,21 +1,21 @@
 package br.com.wine.apiwine.service;
 
 import br.com.wine.apiwine.data.model.Purchase;
-import br.com.wine.apiwine.repository.PurchaseInCloudRepository;
+import br.com.wine.apiwine.repository.PurchaseRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PurchaseServiceInCloud {
+public class PurchaseService {
 
-    PurchaseInCloudRepository purchaseInCloudRepository;
+    PurchaseRepository purchaseRepository;
 
-    public PurchaseServiceInCloud(PurchaseInCloudRepository purchaseInCloudRepository) {
-        this.purchaseInCloudRepository = purchaseInCloudRepository;
+    public PurchaseService(PurchaseRepository purchaseRepository) {
+        this.purchaseRepository = purchaseRepository;
     }
 
     public List<Purchase> getAll() {
-        return purchaseInCloudRepository.getAll();
+        return purchaseRepository.getAll();
     }
 
     public ArrayList<Purchase> getClientPurchases(String cpf) {

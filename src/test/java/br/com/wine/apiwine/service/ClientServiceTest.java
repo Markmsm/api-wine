@@ -27,7 +27,6 @@ public class ClientServiceTest {
         purchaseCreator = new PurchaseCreator();
 
         when(mockedClientRepository.getAll()).thenReturn(getFakeClients());
-//        Lembrar de mudar ClientInCloudRepository por ClientRepository
         when(mockedPurchaseService.getAll()).thenReturn(purchaseCreator.getFakePurchases());
     }
 

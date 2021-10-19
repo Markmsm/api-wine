@@ -31,26 +31,20 @@ public class ClientService {
         List<Client> clients = getAll();
         List<Client> sortedClients = new ArrayList<>();
 
-        for (Client client : clients) {
-            clientsWithExpended.add(new TempClient(client, 0.0));
-        }
+        clients.forEach(client -> clientsWithExpended.add(new TempClient(client, 0.0)));
 
-        for (Purchase purchase : purchases) {
-            for (TempClient tempClient : clientsWithExpended) {
-                if (isPurchaseFromClient(tempClient.getClient().getCpf(), purchase.getCliente())) {
-                    tempClient.setTotalExpended(tempClient.getTotalExpended() + purchase.getValorTotal());
-                    break;
-                }
+        purchases.forEach(purchase -> clientsWithExpended.forEach(tempClient -> {
+            if (isPurchaseFromClient(tempClient.getClient().getCpf(), purchase.getCliente())) {
+                tempClient.setTotalExpended(tempClient.getTotalExpended() + purchase.getValorTotal());
             }
-        }
+        }));
 
         clientsWithExpended.sort(Comparator.comparing(TempClient::getTotalExpended).reversed());
-
-        for (TempClient tempClient : clientsWithExpended) {
-            sortedClients.add(tempClient.getClient());
-        }
+        clientsWithExpended.forEach(tempClient -> sortedClients.add(tempClient.getClient()));
 
         return sortedClients;
+
+
     }
 
     public Client getClientWithMaxBuyInYear(String year) {

@@ -1,9 +1,6 @@
 package br.com.wine.apiwine.configuration;
 
-import br.com.wine.apiwine.repository.ClientInCloudRepository;
-import br.com.wine.apiwine.repository.ClientRepository;
-import br.com.wine.apiwine.repository.PurchaseInCloudRepository;
-import br.com.wine.apiwine.repository.PurchaseRepository;
+import br.com.wine.apiwine.repository.*;
 import br.com.wine.apiwine.service.ClientService;
 import br.com.wine.apiwine.service.PurchaseService;
 import org.springframework.context.annotation.Bean;
@@ -19,8 +16,8 @@ public class WineConfiguration {
     }
 
     @Bean
-    ClientInCloudRepository clientInCloudRepository() {
-        return new ClientInCloudRepository();
+    ClientRepository clientRepository() {
+        return new ClientInFileRepository();
     }
 
     @Bean

@@ -107,11 +107,11 @@ public class ClientServiceTest {
         Client client2 = new Client();
 
         client1.setId(1);
-        client1.setNome("Vinicius");
+        client1.setName("Vinicius");
         client1.setCpf("000.000.000-01");
 
         client2.setId(2);
-        client2.setNome("Marcos");
+        client2.setName("Marcos");
         client2.setCpf("000.000.000-02");
 
         clients.add(client1);

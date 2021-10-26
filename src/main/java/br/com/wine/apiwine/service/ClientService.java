@@ -71,25 +71,19 @@ public class ClientService {
         ArrayList<TempClient> loyalTempClients = new ArrayList<>();
         ArrayList<Client> loyalClients = new ArrayList<>();
 
-        for (Client client : clients) {
-            loyalTempClients.add(new TempClient(client, 0));
-        }
+        clients.forEach(client -> loyalTempClients.add(new TempClient(client, 0)));
 
-        for (Purchase purchase : purchases) {
-            for (TempClient tempClient : loyalTempClients) {
+        purchases.forEach(purchase -> {
+            loyalTempClients.forEach(tempClient -> {
                 if (isPurchaseFromClient(tempClient.getClient().getCpf(), purchase.getCliente())) {
                     tempClient.setBuyTimes(tempClient.getBuyTimes() + 1);
-                    break;
                 }
-            }
-        }
+            });
+        });
 
         loyalTempClients.removeIf(tempClient -> tempClient.getBuyTimes() < 3);
         loyalTempClients.sort(Comparator.comparing(TempClient::getBuyTimes).reversed());
-
-        for (TempClient tempClient : loyalTempClients) {
-            loyalClients.add(tempClient.getClient());
-        }
+        loyalTempClients.forEach(tempClient -> loyalClients.add(tempClient.getClient()));
 
         return loyalClients;
     }

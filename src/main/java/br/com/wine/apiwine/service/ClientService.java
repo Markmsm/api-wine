@@ -30,6 +30,10 @@ public class ClientService {
         List<Client> clients = getAll();
         List<Client> sortedClients = new ArrayList<>();
 
+        if (clients.isEmpty() || purchases.isEmpty()) {
+            return sortedClients;
+        }
+
         clients.forEach(client -> clientsWithExpended.add(new TempClient(client, 0.0)));
 
         purchases.forEach(purchase -> clientsWithExpended.forEach(tempClient -> {
@@ -42,27 +46,29 @@ public class ClientService {
         clientsWithExpended.forEach(tempClient -> sortedClients.add(tempClient.getClient()));
 
         return sortedClients;
-
-
     }
 
-    public Client getClientWithMaxBuyInYear(String year) {
+    public Client getClientWithMaxBuyInYear(String year) throws Exception {
         List<Purchase> purchases = purchaseService.getAll();
         List<Client> clients = getAll();
         Optional<Client> clientWithHighestBuy = null;
         Optional<Purchase> highestPurchase;
 
-        highestPurchase = purchases
-                .stream()
-                .filter(purchase -> purchase.getData().contains(year))
-                .max(Comparator.comparing(Purchase::getValorTotal));
+        try {
+            highestPurchase = purchases
+                    .stream()
+                    .filter(purchase -> purchase.getData().contains(year))
+                    .max(Comparator.comparing(Purchase::getValorTotal));
 
-        clientWithHighestBuy = clients
-                .stream()
-                .filter(client -> isPurchaseFromClient(client.getCpf(), highestPurchase.get().getCliente()))
-                .findFirst();
+            clientWithHighestBuy = clients
+                    .stream()
+                    .filter(client -> isPurchaseFromClient(client.getCpf(), highestPurchase.get().getCliente()))
+                    .findFirst();
 
-        return clientWithHighestBuy.get();
+            return clientWithHighestBuy.get();
+        } catch (NoSuchElementException ex) {
+            throw new NoSuchElementException("Are not purchases this year!");
+        }
     }
 
     public ArrayList<Client> getLoyalClients() {
@@ -82,8 +88,12 @@ public class ClientService {
         });
 
         loyalTempClients.removeIf(tempClient -> tempClient.getBuyTimes() < 3);
-        loyalTempClients.sort(Comparator.comparing(TempClient::getBuyTimes).reversed());
-        loyalTempClients.forEach(tempClient -> loyalClients.add(tempClient.getClient()));
+        loyalTempClients
+                .stream()
+                .sorted(Comparator.comparing(TempClient::getBuyTimes).reversed())
+                .forEach(tempClient -> loyalClients.add(tempClient.getClient()));
+//        loyalTempClients.sort(Comparator.comparing(TempClient::getBuyTimes).reversed());
+//        loyalTempClients.forEach(tempClient -> loyalClients.add(tempClient.getClient()));
 
         return loyalClients;
     }

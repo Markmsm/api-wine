@@ -7,8 +7,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -18,6 +19,7 @@ public class ClientServiceTest {
     static PurchaseService mockedPurchaseService;
     static ClientService clientService;
     static PurchaseCreator purchaseCreator;
+    static ClientCreator clientCreator;
 
     @BeforeAll
     static void setUp() {
@@ -25,18 +27,49 @@ public class ClientServiceTest {
         mockedPurchaseService = mock(PurchaseService.class);
         clientService = new ClientService(mockedClientRepository, mockedPurchaseService);
         purchaseCreator = new PurchaseCreator();
+        clientCreator = new ClientCreator();
 
-        when(mockedClientRepository.getAll()).thenReturn(getFakeClients());
+        when(mockedClientRepository.getAll()).thenReturn(clientCreator.getFakeClients());
         when(mockedPurchaseService.getAll()).thenReturn(purchaseCreator.getFakePurchases());
     }
 
     @Test
+    void shouldReturnNoClientIfNotExistClient() {
+        when(mockedClientRepository.getAll()).thenReturn(clientCreator.getFakeClientsEmpty());
+        List<Client> clients = clientService.getClientsSortedByMaxSpent();
+
+        assertTrue(clients.isEmpty());
+    }
+
+    @Test
+    void shouldNotReturnClientsIfNotExistPurchases() {
+        when(mockedPurchaseService.getAll()).thenReturn(purchaseCreator.getFakePurchasesEmpty());
+        List<Client> clients = clientService.getClientsSortedByMaxSpent();
+
+        assertTrue(clients.isEmpty());
+    }
+
+    @Test
+    void shouldReturnClientsWithoutSpentInLastPositionSortedByMaxSpent() {
+        List<Client> fakeClients = clientCreator.getFakeClients();
+        List<Client> clients = clientService.getClientsSortedByMaxSpent();
+
+        assertEquals(fakeClients.get(4).getId(), clients.get(5).getId());
+        assertEquals(fakeClients.get(6).getId(), clients.get(6).getId());
+    }
+
+    @Test
     void shouldReturnSortedClientsByMaxSpent() {
-        List<Client> fakeClients = getFakeClients();
+        List<Client> fakeClients = clientCreator.getFakeClients();
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
         assertEquals(fakeClients.get(1).getId(), clients.get(0).getId());
-        assertEquals(fakeClients.get(0).getId(), clients.get(1).getId());
+        assertEquals(fakeClients.get(5).getId(), clients.get(1).getId());
+        assertEquals(fakeClients.get(0).getId(), clients.get(2).getId());
+        assertEquals(fakeClients.get(2).getId(), clients.get(3).getId());
+        assertEquals(fakeClients.get(3).getId(), clients.get(4).getId());
+        assertEquals(fakeClients.get(4).getId(), clients.get(5).getId());
+        assertEquals(fakeClients.get(6).getId(), clients.get(6).getId());
     }
 
     // TODO: - Acrescentar mais clientes para testar
@@ -45,27 +78,26 @@ public class ClientServiceTest {
     //       - Criar teste onde não exista nenhum cliente
     //       - Criar teste com compra de clientes que não existem na lista de clientes
 
-//    @Test
-//    void shouldThrowExceptionIfNoClient() {
-//        when(mockedClientInCloudRepository.getAll()).thenReturn(null);
-//
-//        Exception exception = assertThrows(ArithmeticException.class, () ->
-//                clientServiceInCloud.getClientsSortedByMaxSpent());
-//
-//        assertEquals("No client!", exception.getMessage());
-//    }
+    @Test
+    void shouldThrowExceptionIfNoExistsBuyInYear() {
+        Throwable ex = assertThrows(NoSuchElementException.class, () -> {
+            Client client = clientService.getClientWithMaxBuyInYear("1994");
+        });
+
+        assertEquals("Are not purchases this year!", ex.getMessage());
+    }
 
     @Test
-    void shouldReturnClientWithMaxBuyInYear() {
-        Client fakeClient = getFakeClients().get(1);
-        Client clientWithMaxBuy = clientService.getClientWithMaxBuyInYear("2016");
+    void shouldReturnClientWithMaxBuyInYear() throws Exception {
+        int fakeClientId = clientCreator.getFakeClients().get(1).getId();
+        int clientWithMaxBuyId = clientService.getClientWithMaxBuyInYear("2016").getId();
 
-        assertEquals(fakeClient.getId(), clientWithMaxBuy.getId());
+        assertEquals(fakeClientId, clientWithMaxBuyId);
     }
 
     @Test
     void shouldReturnLoyalClients() {
-        Client fakeClient = getFakeClients().get(1);
+        Client fakeClient = clientCreator.getFakeClients().get(1);
         ArrayList<Client> loyalClients = clientService.getLoyalClients();
 
         assertEquals(1, loyalClients.size());
@@ -74,7 +106,7 @@ public class ClientServiceTest {
 
     @Test
     void shouldReturnRecommendedWine() {
-        List<Client> fakeClients = getFakeClients();
+        List<Client> fakeClients = clientCreator.getFakeClients();
         List<Purchase> fakePurchases = purchaseCreator.getFakePurchases();
         WineCreator wineCreator = new WineCreator();
 
@@ -99,24 +131,5 @@ public class ClientServiceTest {
 
         assertEquals(fakeWineForClient1.getCodigo(), recommendedWineForClient1.getCodigo());
         assertEquals(fakeWineForClient2.getCodigo(), recommendedWineForClient2.getCodigo());
-    }
-
-    private static List<Client> getFakeClients() {
-        List<Client> clients = new ArrayList<>();
-        Client client1 = new Client();
-        Client client2 = new Client();
-
-        client1.setId(1);
-        client1.setName("Vinicius");
-        client1.setCpf("000.000.000-01");
-
-        client2.setId(2);
-        client2.setName("Marcos");
-        client2.setCpf("000.000.000-02");
-
-        clients.add(client1);
-        clients.add(client2);
-
-        return clients;
     }
 }

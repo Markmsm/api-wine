@@ -24,7 +24,6 @@ public class ClientService {
         return clientRepository.getAll();
     }
 
-    // TODO: Reescrever este método usando api funcional do JAVA
     public List<Client> getClientsSortedByMaxSpent() {
         List<Purchase> purchases = purchaseService.getAll();
         ArrayList<TempClient> clientsWithExpended = new ArrayList<>();//nomenclatura da classe TempClient
@@ -50,28 +49,20 @@ public class ClientService {
     public Client getClientWithMaxBuyInYear(String year) {
         List<Purchase> purchases = purchaseService.getAll();
         List<Client> clients = getAll();
-        Client clientWithHighestBuy = null;
+        Optional<Client> clientWithHighestBuy = null;
+        Optional<Purchase> highestPurchase;
 
-        purchases.sort(Comparator.comparing(Purchase::getValorTotal).reversed());
+        highestPurchase = purchases
+                .stream()
+                .filter(purchase -> purchase.getData().contains(year))
+                .max(Comparator.comparing(Purchase::getValorTotal));
 
-        for (Purchase purchase : purchases) {
-            if (!purchase.getData().contains(year)) {
-                continue;
-            }
+        clientWithHighestBuy = clients
+                .stream()
+                .filter(client -> isPurchaseFromClient(client.getCpf(), highestPurchase.get().getCliente()))
+                .findFirst();
 
-            for (Client client : clients) {
-                if (isPurchaseFromClient(client.getCpf(), purchase.getCliente())) {
-                    clientWithHighestBuy = client;
-                    break;
-                }
-            }
-
-            if (clientWithHighestBuy != null) {
-                break;
-            }
-        }
-
-        return clientWithHighestBuy;
+        return clientWithHighestBuy.get();
     }
 
     public ArrayList<Client> getLoyalClients() {

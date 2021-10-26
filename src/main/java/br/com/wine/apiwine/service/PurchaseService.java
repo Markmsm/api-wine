@@ -22,11 +22,11 @@ public class PurchaseService {
         List<Purchase> purchases = getAll();
         ArrayList<Purchase> clientPurchases = new ArrayList<>();
 
-        for (Purchase purchase : purchases) {
+        purchases.forEach(purchase -> {
             if (formatCpf(cpf).equals(formatCpf(purchase.getCliente()))) {
                 clientPurchases.add(purchase);
             }
-        }
+        });
 
         return clientPurchases;
     }

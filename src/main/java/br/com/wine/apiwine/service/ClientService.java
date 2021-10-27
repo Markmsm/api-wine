@@ -54,6 +54,13 @@ public class ClientService {
         Optional<Client> clientWithHighestBuy = null;
         Optional<Purchase> highestPurchase;
 
+        if (purchases.isEmpty()) {
+            throw new NoSuchElementException("There is no purchase!");
+        }
+        if (clients.isEmpty()) {
+            throw new NoSuchElementException("There is no client!");
+        }
+
         try {
             highestPurchase = purchases
                     .stream()

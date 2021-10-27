@@ -3,6 +3,7 @@ package br.com.wine.apiwine.service;
 import br.com.wine.apiwine.data.model.*;
 import br.com.wine.apiwine.repository.ClientRepository;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -21,8 +23,8 @@ public class ClientServiceTest {
     static PurchaseCreator purchaseCreator;
     static ClientCreator clientCreator;
 
-    @BeforeAll
-    static void setUp() {
+    @BeforeEach
+    void setUp() {
         mockedClientRepository = mock(ClientRepository.class);
         mockedPurchaseService = mock(PurchaseService.class);
         clientService = new ClientService(mockedClientRepository, mockedPurchaseService);
@@ -79,6 +81,28 @@ public class ClientServiceTest {
     //       - Criar teste com compra de clientes que não existem na lista de clientes
 
     @Test
+    void shouldThrowExceptionIfNoExistsPurchase() {
+        when(mockedPurchaseService.getAll()).thenReturn(purchaseCreator.getFakePurchasesEmpty());
+
+        Throwable ex = assertThrows(NoSuchElementException.class, () -> {
+            Client client = clientService.getClientWithMaxBuyInYear("2016");
+        });
+
+        assertEquals("There is no purchase!", ex.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionIfNoExistsClient() {
+        when(mockedClientRepository.getAll()).thenReturn(clientCreator.getFakeClientsEmpty());
+
+        Throwable ex = assertThrows(NoSuchElementException.class, () -> {
+            Client client = clientService.getClientWithMaxBuyInYear("2016");
+        });
+
+        assertEquals("There is no client!", ex.getMessage());
+    }
+
+    @Test
     void shouldThrowExceptionIfNoExistsBuyInYear() {
         Throwable ex = assertThrows(NoSuchElementException.class, () -> {
             Client client = clientService.getClientWithMaxBuyInYear("1994");
@@ -97,11 +121,12 @@ public class ClientServiceTest {
 
     @Test
     void shouldReturnLoyalClients() {
-        Client fakeClient = clientCreator.getFakeClients().get(1);
+        List<Client> fakeClients = clientCreator.getFakeClients();
         ArrayList<Client> loyalClients = clientService.getLoyalClients();
 
-        assertEquals(1, loyalClients.size());
-        assertEquals(fakeClient.getId(), loyalClients.get(0).getId());
+        assertEquals(2, loyalClients.size());
+        assertEquals(fakeClients.get(1).getId(), loyalClients.get(0).getId());
+        assertEquals(fakeClients.get(2).getId(), loyalClients.get(1).getId());
     }
 
     @Test

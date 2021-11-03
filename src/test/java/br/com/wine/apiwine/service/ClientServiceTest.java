@@ -2,16 +2,14 @@ package br.com.wine.apiwine.service;
 
 import br.com.wine.apiwine.data.model.*;
 import br.com.wine.apiwine.repository.ClientRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +42,7 @@ public class ClientServiceTest {
     }
 
     @Test
-    void shouldNotReturnClientsIfNotExistPurchases() {
+    void shouldReturnNoClientsIfNotExistPurchase() {
         when(mockedPurchaseService.getAll()).thenReturn(purchaseCreator.getFakePurchasesEmpty());
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
@@ -56,8 +54,8 @@ public class ClientServiceTest {
         List<Client> fakeClients = clientCreator.getFakeClients();
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
-        assertEquals(fakeClients.get(4).getId(), clients.get(5).getId());
-        assertEquals(fakeClients.get(6).getId(), clients.get(6).getId());
+        assertEquals(fakeClients.get(6).getId(), clients.get(5).getId());
+        assertEquals(fakeClients.get(4).getId(), clients.get(6).getId());
     }
 
     @Test
@@ -65,20 +63,13 @@ public class ClientServiceTest {
         List<Client> fakeClients = clientCreator.getFakeClients();
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
+        assertEquals(7, clients.size());
         assertEquals(fakeClients.get(1).getId(), clients.get(0).getId());
         assertEquals(fakeClients.get(5).getId(), clients.get(1).getId());
         assertEquals(fakeClients.get(0).getId(), clients.get(2).getId());
         assertEquals(fakeClients.get(2).getId(), clients.get(3).getId());
         assertEquals(fakeClients.get(3).getId(), clients.get(4).getId());
-        assertEquals(fakeClients.get(4).getId(), clients.get(5).getId());
-        assertEquals(fakeClients.get(6).getId(), clients.get(6).getId());
     }
-
-    // TODO: - Acrescentar mais clientes para testar
-    //       - Criar teste com lista de compras que não tenham todos os clientes
-    //       - Criar teste com lista de compras vazia
-    //       - Criar teste onde não exista nenhum cliente
-    //       - Criar teste com compra de clientes que não existem na lista de clientes
 
     @Test
     void shouldThrowExceptionIfNoExistsPurchase() {
@@ -122,7 +113,7 @@ public class ClientServiceTest {
     @Test
     void shouldReturnLoyalClients() {
         List<Client> fakeClients = clientCreator.getFakeClients();
-        ArrayList<Client> loyalClients = clientService.getLoyalClients();
+        List<Client> loyalClients = clientService.getLoyalClients();
 
         assertEquals(2, loyalClients.size());
         assertEquals(fakeClients.get(1).getId(), loyalClients.get(0).getId());
@@ -130,31 +121,49 @@ public class ClientServiceTest {
     }
 
     @Test
+    void shouldThrowExceptionIfClientHaveNotPurchase() {
+        Throwable ex = assertThrows(NoSuchElementException.class, () -> {
+            Optional<Wine> wine = clientService.getRecommendedWine("000.000.000-08");
+        });
+
+        assertEquals("This client haven't purchase!", ex.getMessage());
+    }
+
+    @Test
     void shouldReturnRecommendedWine() {
-        List<Client> fakeClients = clientCreator.getFakeClients();
-        List<Purchase> fakePurchases = purchaseCreator.getFakePurchases();
-        WineCreator wineCreator = new WineCreator();
+        String fakeCPF = "000.000.000-02";
+        when(mockedPurchaseService.getClientPurchases(fakeCPF)).thenReturn(purchaseCreator.getPurchasesOfClient(fakeCPF));
 
-        Wine fakeWineForClient1 = wineCreator.getFakeWines()[0];
-        Wine fakeWineForClient2 = wineCreator.getFakeWines()[1];
+        Optional<Wine> wine = clientService.getRecommendedWine(fakeCPF);
+        Wine expectedWine = new WineCreator().getFakeWines().get(0);
 
-        ArrayList<Purchase> client1Purchases = new ArrayList<>();
-        ArrayList<Purchase> client2Purchases = new ArrayList<>();
+        assertEquals(expectedWine.getCodigo(), wine.get().getCodigo());
 
-        client1Purchases.add(fakePurchases.get(0));
-        client1Purchases.add(fakePurchases.get(1));
-        client2Purchases.add(fakePurchases.get(2));
-        client2Purchases.add(fakePurchases.get(3));
-        client2Purchases.add(fakePurchases.get(4));
-        client2Purchases.add(fakePurchases.get(5));
 
-        when(mockedPurchaseService.getClientPurchases(fakeClients.get(1).getCpf())).thenReturn(client1Purchases);
-        when(mockedPurchaseService.getClientPurchases(fakeClients.get(0).getCpf())).thenReturn(client2Purchases);
-
-        Wine recommendedWineForClient1 = clientService.getRecommendedWine(fakeClients.get(0).getCpf());
-        Wine recommendedWineForClient2 = clientService.getRecommendedWine(fakeClients.get(1).getCpf());
-
-        assertEquals(fakeWineForClient1.getCodigo(), recommendedWineForClient1.getCodigo());
-        assertEquals(fakeWineForClient2.getCodigo(), recommendedWineForClient2.getCodigo());
+//        List<Client> fakeClients = clientCreator.getFakeClients();
+//        List<Purchase> fakePurchases = purchaseCreator.getFakePurchases();
+//        WineCreator wineCreator = new WineCreator();
+//
+//        Wine fakeWineForClient1 = wineCreator.getFakeWines()[0];
+//        Wine fakeWineForClient2 = wineCreator.getFakeWines()[1];
+//
+//        ArrayList<Purchase> client1Purchases = new ArrayList<>();
+//        ArrayList<Purchase> client2Purchases = new ArrayList<>();
+//
+//        client1Purchases.add(fakePurchases.get(0));
+//        client1Purchases.add(fakePurchases.get(1));
+//        client2Purchases.add(fakePurchases.get(2));
+//        client2Purchases.add(fakePurchases.get(3));
+//        client2Purchases.add(fakePurchases.get(4));
+//        client2Purchases.add(fakePurchases.get(5));
+//
+//        when(mockedPurchaseService.getClientPurchases(fakeClients.get(1).getCpf())).thenReturn(client1Purchases);
+//        when(mockedPurchaseService.getClientPurchases(fakeClients.get(0).getCpf())).thenReturn(client2Purchases);
+//
+//        Wine recommendedWineForClient1 = clientService.getRecommendedWine(fakeClients.get(0).getCpf());
+//        Wine recommendedWineForClient2 = clientService.getRecommendedWine(fakeClients.get(1).getCpf());
+//
+//        assertEquals(fakeWineForClient1.getCodigo(), recommendedWineForClient1.getCodigo());
+//        assertEquals(fakeWineForClient2.getCodigo(), recommendedWineForClient2.getCodigo());
     }
 }

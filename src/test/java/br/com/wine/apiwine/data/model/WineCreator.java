@@ -1,8 +1,11 @@
 package br.com.wine.apiwine.data.model;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class WineCreator {
 
-    public Wine[] getFakeWines() {
+    public List<Wine> getFakeWines() {
         Wine wine1 = new Wine();
         Wine wine2 = new Wine();
         Wine wine3 = new Wine();
@@ -31,6 +34,6 @@ public class WineCreator {
         wine3.setSafra(2014);
         wine3.setPreco(53.79);
 
-        return new Wine[] {wine1, wine2, wine3};
+        return Arrays.asList(new Wine[] {wine1, wine2, wine3});
     }
 }

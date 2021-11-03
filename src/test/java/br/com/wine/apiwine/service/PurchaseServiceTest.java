@@ -6,6 +6,7 @@ import br.com.wine.apiwine.repository.PurchaseRepository;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -22,7 +23,7 @@ public class PurchaseRepositoryTest {
         when(purchaseService.getAll()).thenReturn(purchaseCreator.getFakePurchases());
 
         String clientCpf = "000.000.000.01";
-        ArrayList<Purchase> purchases = purchaseService.getClientPurchases(clientCpf);
+        List<Purchase> purchases = purchaseService.getClientPurchases(clientCpf);
 
         assertEquals(2, purchases.size());
         assertEquals(clientCpf, purchases.get(0).getCliente());

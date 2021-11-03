@@ -5,9 +5,9 @@ import br.com.wine.apiwine.data.model.Wine;
 import br.com.wine.apiwine.service.ClientService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/clients/v1")
@@ -35,12 +35,12 @@ public class ClientController {
     }
 
     @GetMapping("/loyal-clients")
-    public ArrayList<Client> getLoyalClients() {
+    public List<Client> getLoyalClients() {
         return service.getLoyalClients();
     }
 
     @GetMapping("/wine/{cpf}")
-    public Wine getRecommendedWine(@PathVariable("cpf") String cpf) {
+    public Optional<Wine> getRecommendedWine(@PathVariable("cpf") String cpf) {
         return service.getRecommendedWine(cpf);
     }
 }

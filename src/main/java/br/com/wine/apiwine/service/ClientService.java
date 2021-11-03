@@ -1,12 +1,10 @@
 package br.com.wine.apiwine.service;
 
-import br.com.wine.apiwine.data.model.Client;
-import br.com.wine.apiwine.data.model.Purchase;
-import br.com.wine.apiwine.data.model.TempClient;
-import br.com.wine.apiwine.data.model.Wine;
+import br.com.wine.apiwine.data.model.*;
 import br.com.wine.apiwine.repository.ClientRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ClientService {
 
@@ -26,33 +24,34 @@ public class ClientService {
 
     public List<Client> getClientsSortedByMaxSpent() {
         List<Purchase> purchases = purchaseService.getAll();
-        ArrayList<TempClient> clientsWithExpended = new ArrayList<>();//nomenclatura da classe TempClient
         List<Client> clients = getAll();
-        List<Client> sortedClients = new ArrayList<>();
 
         if (clients.isEmpty() || purchases.isEmpty()) {
-            return sortedClients;
+            clients.clear();
+            return clients;
         }
 
-        clients.forEach(client -> clientsWithExpended.add(new TempClient(client, 0.0)));
+        List<String> sortedCPFClientsByTotalSpent = purchases
+                .stream()
+                .collect(Collectors.groupingBy(Purchase::getCliente,
+                        Collectors.summingDouble(Purchase::getValorTotal)))
+                .entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .map(this::formatCpf)
+                .collect(Collectors.toList());
 
-        purchases.forEach(purchase -> clientsWithExpended.forEach(tempClient -> {
-            if (isPurchaseFromClient(tempClient.getClient().getCpf(), purchase.getCliente())) {
-                tempClient.setTotalExpended(tempClient.getTotalExpended() + purchase.getValorTotal());
-            }
-        }));
+        clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
+        clients.sort(Comparator.comparing(c -> sortedCPFClientsByTotalSpent.indexOf(c.getCpf())));
+        Collections.reverse(clients);
 
-        clientsWithExpended.sort(Comparator.comparing(TempClient::getTotalExpended).reversed());
-        clientsWithExpended.forEach(tempClient -> sortedClients.add(tempClient.getClient()));
-
-        return sortedClients;
+        return clients;
     }
 
-    public Client getClientWithMaxBuyInYear(String year) throws Exception {
+    public Client getClientWithMaxBuyInYear(String year) {
         List<Purchase> purchases = purchaseService.getAll();
         List<Client> clients = getAll();
-        Optional<Client> clientWithHighestBuy = null;
-        Optional<Purchase> highestPurchase;
 
         if (purchases.isEmpty()) {
             throw new NoSuchElementException("There is no purchase!");
@@ -62,12 +61,12 @@ public class ClientService {
         }
 
         try {
-            highestPurchase = purchases
+            Optional<Purchase> highestPurchase = purchases
                     .stream()
                     .filter(purchase -> purchase.getData().contains(year))
                     .max(Comparator.comparing(Purchase::getValorTotal));
 
-            clientWithHighestBuy = clients
+            Optional<Client> clientWithHighestBuy = clients
                     .stream()
                     .filter(client -> isPurchaseFromClient(client.getCpf(), highestPurchase.get().getCliente()))
                     .findFirst();
@@ -78,57 +77,61 @@ public class ClientService {
         }
     }
 
-    public ArrayList<Client> getLoyalClients() {
+    public List<Client> getLoyalClients() {
         List<Purchase> purchases = purchaseService.getAll();
         List<Client> clients = getAll();
-        ArrayList<TempClient> loyalTempClients = new ArrayList<>();
-        ArrayList<Client> loyalClients = new ArrayList<>();
 
-        clients.forEach(client -> loyalTempClients.add(new TempClient(client, 0)));
+        if (clients.isEmpty() || purchases.isEmpty()) {
+            clients.clear();
+            return clients;
+        }
 
-        purchases.forEach(purchase -> {
-            loyalTempClients.forEach(tempClient -> {
-                if (isPurchaseFromClient(tempClient.getClient().getCpf(), purchase.getCliente())) {
-                    tempClient.setBuyTimes(tempClient.getBuyTimes() + 1);
-                }
-            });
-        });
-
-        loyalTempClients.removeIf(tempClient -> tempClient.getBuyTimes() < 3);
-        loyalTempClients
+        List<String> sortedCPFClientsByNumOfPurchases = purchases
                 .stream()
-                .sorted(Comparator.comparing(TempClient::getBuyTimes).reversed())
-                .forEach(tempClient -> loyalClients.add(tempClient.getClient()));
-//        loyalTempClients.sort(Comparator.comparing(TempClient::getBuyTimes).reversed());
-//        loyalTempClients.forEach(tempClient -> loyalClients.add(tempClient.getClient()));
+                .collect(Collectors.groupingBy(Purchase::getCliente,
+                        Collectors.counting()))
+                .entrySet()
+                .stream()
+                .filter(p -> p.getValue() > 3)
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .map(this::formatCpf)
+                .collect(Collectors.toList());
+
+        clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
+
+        List<Client> loyalClients = clients
+                .stream()
+                .filter(c -> sortedCPFClientsByNumOfPurchases.contains(c.getCpf()))
+                .sorted(Comparator.comparing(c -> sortedCPFClientsByNumOfPurchases.indexOf(c.getCpf())))
+                .collect(Collectors.toList());
+
+        //testar se não houver cliente no indice 2 mas houver no 3
+
+        Collections.reverse(loyalClients);
 
         return loyalClients;
     }
 
-    public Wine getRecommendedWine(String cpf) {
-        ArrayList<Purchase> purchases = purchaseService.getClientPurchases(cpf);
+    public Optional<Wine> getRecommendedWine(String cpf) {
+        List<Purchase> purchasesOfClient = purchaseService.getClientPurchases(cpf);
         Map<Wine, Integer> wines = new HashMap<>();
-        Wine recommendedWine = new Wine();
-        int countWine = 0;
 
-        for (Purchase purchase : purchases) {
-            for (Wine wine : purchase.getItens()) {
-                if (wines.containsKey(wine)) {
-                    wines.put(wine, wines.get(wine) + 1);
-                } else {
-                    wines.put(wine, 1);
-                }
-            }
+        if (purchasesOfClient.isEmpty()) {
+            throw new NoSuchElementException("This client haven't purchase yet!");
         }
 
-        for (Map.Entry<Wine, Integer> wine : wines.entrySet()) {
-            if (wine.getValue() > countWine) {
-                countWine = wine.getValue();
-                recommendedWine = wine.getKey();
-            }
-        }
+        purchasesOfClient
+                .forEach(p -> p.getItens()
+                        .forEach(w -> wines.put(w, wines.containsKey(w) ? (wines.get(w) + 1) : 1)));
 
-        return recommendedWine;
+        return wines
+                .entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .stream()
+                .map(Map.Entry::getKey)
+                .findFirst();
     }
 
     private boolean isPurchaseFromClient(String clientCpf, String purchaseCpf) {

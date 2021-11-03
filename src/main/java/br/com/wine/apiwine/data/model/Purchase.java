@@ -1,6 +1,6 @@
 package br.com.wine.apiwine.data.model;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -9,10 +9,12 @@ public class Purchase {
     private String codigo;
     private String data;
     private String cliente;
-    private Wine[] itens;
+    private List<Wine> itens;
     private Double valorTotal;
 
-    public Purchase() {}
+    public Purchase() {
+        this.itens = new ArrayList<>();
+    }
 
     public String getCodigo() {
         return codigo;
@@ -38,12 +40,16 @@ public class Purchase {
         this.cliente = cliente;
     }
 
-    public Wine[] getItens() {
+    public List<Wine> getItens() {
         return itens;
     }
 
-    public void setItens(Wine[] itens) {
+    public void setItens(List<Wine> itens) {
         this.itens = itens;
+    }
+
+    public void addItem(Wine wine) {
+        this.itens.add(wine);
     }
 
     public Double getValorTotal() {

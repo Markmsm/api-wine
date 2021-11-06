@@ -19,98 +19,91 @@ public class ClientService {
     }
 
     public List<Client> getAll() {
-        return clientRepository.getAll();
-    }
+        List<Client> clients = clientRepository.getAll();
 
-    public List<Client> getClientsSortedByMaxSpent() {
-        List<Purchase> purchases = purchaseService.getAll();
-        List<Client> clients = getAll();
-
-        if (clients.isEmpty() || purchases.isEmpty()) {
-            clients.clear();
-            return clients;
-        }
-
-        List<String> sortedCPFClientsByTotalSpent = purchases
-                .stream()
-                .collect(Collectors.groupingBy(Purchase::getCliente,
-                        Collectors.summingDouble(Purchase::getValorTotal)))
-                .entrySet()
-                .stream()
-                .sorted(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .map(this::formatCpf)
-                .collect(Collectors.toList());
-
-        clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
-        clients.sort(Comparator.comparing(c -> sortedCPFClientsByTotalSpent.indexOf(c.getCpf())));
-        Collections.reverse(clients);
+        if (clients.isEmpty()) throw new NoSuchElementException("There is no client!");
 
         return clients;
     }
 
-    public Client getClientWithMaxBuyInYear(String year) {
-        List<Purchase> purchases = purchaseService.getAll();
-        List<Client> clients = getAll();
-
-        if (purchases.isEmpty()) {
-            throw new NoSuchElementException("There is no purchase!");
-        }
-        if (clients.isEmpty()) {
-            throw new NoSuchElementException("There is no client!");
-        }
-
+    public List<Client> getClientsSortedByMaxSpent() {
         try {
-            Optional<Purchase> highestPurchase = purchases
+            List<Purchase> purchases = purchaseService.getAll();
+            List<Client> clients = getAll();
+
+            if (purchases.isEmpty()) return new ArrayList<>();
+
+            //dúvida = melhor ter a lista purchases e validar se ela está vazia, ou ter a lista declarativa
+            // sortedCPFClientsByTotalSpent, trabalhar nela e depois validar ela?
+
+            List<String> sortedCPFClientsByTotalSpent = purchases
+                    .stream()
+                    .collect(Collectors.groupingBy(Purchase::getCliente,
+                            Collectors.summingDouble(Purchase::getValorTotal)))
+                    .entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .map(this::formatCpf)
+                    .collect(Collectors.toList());
+
+            clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
+            clients.sort(Comparator.comparing(c -> sortedCPFClientsByTotalSpent.indexOf(c.getCpf())));
+            Collections.reverse(clients);
+
+            return clients;
+        } catch (NoSuchElementException ex) {
+            return new ArrayList<>();
+        }
+    }
+
+    public Client getClientWithMaxBuyInYear(String year) {
+        try {
+            Optional<Purchase> highestPurchase = purchaseService.getAll()
                     .stream()
                     .filter(purchase -> purchase.getData().contains(year))
                     .max(Comparator.comparing(Purchase::getValorTotal));
 
-            Optional<Client> clientWithHighestBuy = clients
+            Optional<Client> clientWithHighestBuy = getAll()
                     .stream()
                     .filter(client -> isPurchaseFromClient(client.getCpf(), highestPurchase.get().getCliente()))
                     .findFirst();
 
             return clientWithHighestBuy.get();
         } catch (NoSuchElementException ex) {
-            throw new NoSuchElementException("Are not purchases this year!");
+            throw new NoSuchElementException("There are no client or purchase in" + year);
         }
     }
 
     public List<Client> getLoyalClients() {
-        List<Purchase> purchases = purchaseService.getAll();
-        List<Client> clients = getAll();
+        try {
+            List<String> sortedCPFClientsByNumOfPurchases = purchaseService.getAll()
+                    .stream()
+                    .collect(Collectors.groupingBy(Purchase::getCliente,
+                            Collectors.counting()))
+                    .entrySet()
+                    .stream()
+                    .filter(p -> p.getValue() > 3)
+                    .sorted(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey)
+                    .map(this::formatCpf)
+                    .collect(Collectors.toList());
 
-        if (clients.isEmpty() || purchases.isEmpty()) {
-            clients.clear();
-            return clients;
+            List<Client> clients = getAll();
+            clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
+
+            List<Client> loyalClients = clients
+                    .stream()
+                    .filter(c -> sortedCPFClientsByNumOfPurchases.contains(c.getCpf()))
+                    .sorted(Comparator.comparing(c -> sortedCPFClientsByNumOfPurchases.indexOf(c.getCpf())))
+                    .collect(Collectors.toList());
+
+            Collections.reverse(loyalClients);
+
+            return loyalClients;
+        } catch (NoSuchElementException ex) {
+            return new ArrayList<>();
         }
-
-        List<String> sortedCPFClientsByNumOfPurchases = purchases
-                .stream()
-                .collect(Collectors.groupingBy(Purchase::getCliente,
-                        Collectors.counting()))
-                .entrySet()
-                .stream()
-                .filter(p -> p.getValue() > 3)
-                .sorted(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .map(this::formatCpf)
-                .collect(Collectors.toList());
-
-        clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
-
-        List<Client> loyalClients = clients
-                .stream()
-                .filter(c -> sortedCPFClientsByNumOfPurchases.contains(c.getCpf()))
-                .sorted(Comparator.comparing(c -> sortedCPFClientsByNumOfPurchases.indexOf(c.getCpf())))
-                .collect(Collectors.toList());
-
-        //testar se não houver cliente no indice 2 mas houver no 3
-
-        Collections.reverse(loyalClients);
-
-        return loyalClients;
     }
 
     public Optional<Wine> getRecommendedWine(String cpf) {

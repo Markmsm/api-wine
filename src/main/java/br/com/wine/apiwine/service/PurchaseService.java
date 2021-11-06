@@ -5,6 +5,7 @@ import br.com.wine.apiwine.repository.PurchaseRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PurchaseService {
 
@@ -18,17 +19,16 @@ public class PurchaseService {
         return purchaseRepository.getAll();
     }
 
-    public ArrayList<Purchase> getClientPurchases(String cpf) {
+    public List<Purchase> getClientPurchases(String cpf) {
         List<Purchase> purchases = getAll();
-        ArrayList<Purchase> clientPurchases = new ArrayList<>();
+        if (purchases.isEmpty()) {
+            return purchases;
+        }
 
-        purchases.forEach(purchase -> {
-            if (formatCpf(cpf).equals(formatCpf(purchase.getCliente()))) {
-                clientPurchases.add(purchase);
-            }
-        });
-
-        return clientPurchases;
+        return purchases
+                .stream()
+                .filter(p -> formatCpf(cpf).equals(formatCpf(p.getCliente())))
+                .collect(Collectors.toList());
     }
 
     private String formatCpf(String cpf) {

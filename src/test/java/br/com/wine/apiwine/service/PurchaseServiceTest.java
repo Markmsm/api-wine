@@ -5,7 +5,6 @@ import br.com.wine.apiwine.data.model.PurchaseCreator;
 import br.com.wine.apiwine.repository.PurchaseRepository;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -13,7 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 
-public class PurchaseRepositoryTest {
+public class PurchaseServiceTest {
 
     @Test
     void shouldReturnPurchasesFromClient() {

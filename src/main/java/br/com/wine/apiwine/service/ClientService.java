@@ -110,9 +110,7 @@ public class ClientService {
         List<Purchase> purchasesOfClient = purchaseService.getClientPurchases(cpf);
         Map<Wine, Integer> wines = new HashMap<>();
 
-        if (purchasesOfClient.isEmpty()) {
-            throw new NoSuchElementException("This client haven't purchase yet!");
-        }
+        if (purchasesOfClient.isEmpty()) throw new NoSuchElementException("This client haven't purchase yet!");
 
         purchasesOfClient
                 .forEach(p -> p.getItens()
@@ -132,9 +130,8 @@ public class ClientService {
     }
 
     private String formatCpf(String cpf) {
-        if (cpf.length() != 14) {
-            cpf = cpf.substring(1, 15);
-        }
+        if (cpf.length() != 14) cpf = cpf.substring(cpf.length() - 14);
+
         return cpf.replaceAll("\\.|-", "");
     }
 }

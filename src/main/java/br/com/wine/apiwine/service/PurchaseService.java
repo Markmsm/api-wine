@@ -5,6 +5,7 @@ import br.com.wine.apiwine.repository.PurchaseRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 public class PurchaseService {
@@ -16,26 +17,27 @@ public class PurchaseService {
     }
 
     public List<Purchase> getAll() {
-        return purchaseRepository.getAll();
+        List<Purchase> purchases = purchaseRepository.getAll();
+
+        if (purchases.isEmpty()) throw new NoSuchElementException("There is no purchase!");
+
+        return purchases;
     }
 
     public List<Purchase> getClientPurchases(String cpf) {
-        List<Purchase> purchases = getAll();
-        if (purchases.isEmpty()) {
-            return purchases;
+        try {
+            return getAll()
+                    .stream()
+                    .filter(p -> formatCpf(cpf).equals(formatCpf(p.getCliente())))
+                    .collect(Collectors.toList());
+        } catch (NoSuchElementException ex) {
+            return new ArrayList<>();
         }
-
-        return purchases
-                .stream()
-                .filter(p -> formatCpf(cpf).equals(formatCpf(p.getCliente())))
-                .collect(Collectors.toList());
     }
 
     private String formatCpf(String cpf) {
-        if (cpf.length() != 14) {
-            cpf = cpf.substring(1, 15);
-        }
+        if (cpf.length() != 14) cpf = cpf.substring(cpf.length() - 14);
+
         return cpf.replaceAll("\\.|-", "");
     }
-
 }

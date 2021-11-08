@@ -164,7 +164,7 @@ public class ClientServiceTest {
     @Test
     void getRecommendedWineShouldThrowExceptionIfClientHasNoPurchase() {
         Throwable ex = assertThrows(NoSuchElementException.class, () -> {
-            Optional<Wine> wine = clientService.getRecommendedWine("000.000.000-08");
+            Wine wine = clientService.getRecommendedWine("000.000.000-08");
         });
 
         assertEquals("This client haven't purchase yet!", ex.getMessage());
@@ -175,9 +175,9 @@ public class ClientServiceTest {
         String fakeCPF = "000.000.000-02";
         when(mockedPurchaseService.getClientPurchases(fakeCPF)).thenReturn(purchaseCreator.getPurchasesOfClient(fakeCPF));
 
-        Optional<Wine> wine = clientService.getRecommendedWine(fakeCPF);
+        Wine wine = clientService.getRecommendedWine(fakeCPF);
         Wine expectedWine = new WineCreator().getFakeWines().get(0);
 
-        assertEquals(expectedWine.getCodigo(), wine.get().getCodigo());
+        assertEquals(expectedWine.getCodigo(), wine.getCodigo());
     }
 }

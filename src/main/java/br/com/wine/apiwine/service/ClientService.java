@@ -106,7 +106,7 @@ public class ClientService {
         }
     }
 
-    public Optional<Wine> getRecommendedWine(String cpf) {
+    public Wine getRecommendedWine(String cpf) {
         List<Purchase> purchasesOfClient = purchaseService.getClientPurchases(cpf);
         Map<Wine, Integer> wines = new HashMap<>();
 
@@ -122,7 +122,8 @@ public class ClientService {
                 .max(Map.Entry.comparingByValue())
                 .stream()
                 .map(Map.Entry::getKey)
-                .findFirst();
+                .findFirst()
+                .get();
     }
 
     private boolean isPurchaseFromClient(String clientCpf, String purchaseCpf) {

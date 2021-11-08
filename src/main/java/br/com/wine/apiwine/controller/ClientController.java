@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/clients/v1")
@@ -40,7 +39,7 @@ public class ClientController {
     }
 
     @GetMapping("/wine/{cpf}")
-    public Optional<Wine> getRecommendedWine(@PathVariable("cpf") String cpf) {
+    public Wine getRecommendedWine(@PathVariable("cpf") String cpf) {
         return service.getRecommendedWine(cpf);
     }
 }

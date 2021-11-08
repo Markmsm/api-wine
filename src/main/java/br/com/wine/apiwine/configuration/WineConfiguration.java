@@ -3,8 +3,14 @@ package br.com.wine.apiwine.configuration;
 import br.com.wine.apiwine.repository.*;
 import br.com.wine.apiwine.service.ClientService;
 import br.com.wine.apiwine.service.PurchaseService;
+import com.google.gson.Gson;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Scanner;
 
 @Configuration
 public class WineConfiguration {
@@ -16,8 +22,10 @@ public class WineConfiguration {
     }
 
     @Bean
-    ClientRepository clientRepository() {
-        return new ClientInFileRepository();
+    ClientRepository clientRepository() throws FileNotFoundException {
+        return new ClientInFileRepository(
+                new Scanner(new File("/home/ubots/Learnspace/api-wine/src/main/files/clients.csv"))
+        );
     }
 
     @Bean
@@ -26,7 +34,10 @@ public class WineConfiguration {
     }
 
     @Bean
-    PurchaseInCloudRepository purchaseInCloudRepository() {
-        return new PurchaseInCloudRepository();
+    PurchaseRepository purchaseRepository() throws FileNotFoundException {
+        return new PurchaseInFileRepository(
+                new FileReader("/home/ubots/Learnspace/api-wine/src/main/files/purchases.json"),
+                new Gson()
+        );
     }
 }

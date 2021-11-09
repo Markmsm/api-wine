@@ -2,8 +2,6 @@ package br.com.wine.apiwine.repository;
 
 import br.com.wine.apiwine.data.model.Client;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;

@@ -17,14 +17,6 @@ public class PurchaseInCloudRepository implements PurchaseRepository {
                 "http://www.mocky.io/v2/598b16861100004905515ec7",
                 Purchase[].class);
 
-//        Purchase[] purchases = result.getBody();
-//
-//        for (int i = 0; i < purchases.length; i++) {
-//            if (purchases[i].getCliente().length() != 14) {
-//                purchases[i].setCliente(purchases[i].getCliente().substring(1, 15));
-//            }
-//        }
-
         return Arrays.asList(result.getBody());
     }
 }

@@ -8,8 +8,6 @@ import java.util.stream.Collectors;
 
 public class ClientService {
 
-    // TODO: - implementar repository utilizando arquivo
-    //       - pegar dados de um .csv para clientes e de um .json ou .csv para compras (preferencia para .csv)
     private ClientRepository clientRepository;
     private PurchaseService purchaseService;
 

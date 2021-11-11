@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public class PurchaseCreator {
 
-    public List<Purchase> getFakePurchases() {
+    static public List<Purchase> getFakePurchases() {
         List<Purchase> purchases = new ArrayList<>();
         Purchase purchase1OfClient1 = new Purchase();
         Purchase purchase2OfClient1 = new Purchase();
@@ -186,19 +186,19 @@ public class PurchaseCreator {
         return purchases;
     }
 
-    public List<Purchase> getFakePurchasesEmpty() {
+    static public List<Purchase> getFakePurchasesEmpty() {
         List<Purchase> purchases = new ArrayList<>();
         return purchases;
     }
 
-    public List<Purchase> getPurchasesOfClient(String cpf) {
+    static public List<Purchase> getPurchasesOfClient(String cpf) {
         return getFakePurchases()
                 .stream()
                 .filter(p -> formatCpf(cpf).equals(formatCpf(p.getCliente())))
                 .collect(Collectors.toList());
     }
 
-    public List<Purchase> getFakePurchasesWithNonExistingClient() {
+    static public List<Purchase> getFakePurchasesWithNonExistingClient() {
         List<Purchase> purchases = getFakePurchases();
         Purchase purchaseOfNonExistingClient = new Purchase();
 
@@ -210,7 +210,7 @@ public class PurchaseCreator {
         return purchases;
     }
 
-    private String formatCpf(String cpf) {
+    static private String formatCpf(String cpf) {
         if (cpf.length() != 14) {
             cpf = cpf.substring(1, 15);
         }

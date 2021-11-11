@@ -88,9 +88,7 @@ public class ClientService {
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toList());
 
-            List<Client> clients = getAll();
-
-            List<Client> loyalClients = clients
+            List<Client> loyalClients = getAll()
                     .stream()
                     .filter(c -> sortedCPFClientsByNumOfPurchases.contains(c.getCpf()))
                     .sorted(Comparator.comparing(c -> sortedCPFClientsByNumOfPurchases.indexOf(c.getCpf())))

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class ClientCreator {
 
-    public List<Client> getFakeClients() {
+    static public List<Client> getFakeClients() {
         List<Client> clients = new ArrayList<>();
         Client client1 = new Client();
         Client client2 = new Client();
@@ -54,7 +54,7 @@ public class ClientCreator {
         return clients;
     }
 
-    public List<Client> getFakeClientsEmpty() {
+    static public List<Client> getFakeClientsEmpty() {
         List<Client> clients = new ArrayList<>();
         return clients;
     }

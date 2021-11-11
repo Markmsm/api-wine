@@ -83,7 +83,7 @@ public class PurchaseServiceTest {
     void getClientPurchasesShouldReturnPurchasesFromClient() {
         //Given:
         when(mockedPurchaseRepository.getAll()).thenReturn(getFakePurchases());
-        String clientCpf = "000.000.000.01";
+        String clientCpf = "00000000001";
 
         //When:
         List<Purchase> purchases = purchaseService.getClientPurchases(clientCpf);

@@ -6,6 +6,8 @@ import br.com.wine.apiwine.repository.ClientRepository;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static br.com.wine.apiwine.service.CpfFormatter.formatCpf;
+
 public class ClientService {
 
     private ClientRepository clientRepository;
@@ -20,6 +22,8 @@ public class ClientService {
         List<Client> clients = clientRepository.getAll();
 
         if (clients.isEmpty()) throw new NoSuchElementException("There is no client!");
+
+        clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
 
         return clients;
     }
@@ -42,10 +46,8 @@ public class ClientService {
                     .stream()
                     .sorted(Map.Entry.comparingByValue())
                     .map(Map.Entry::getKey)
-                    .map(this::formatCpf)
                     .collect(Collectors.toList());
 
-            clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
             clients.sort(Comparator.comparing(c -> sortedCPFClientsByTotalSpent.indexOf(c.getCpf())));
             Collections.reverse(clients);
 
@@ -84,11 +86,9 @@ public class ClientService {
                     .filter(p -> p.getValue() > 3)
                     .sorted(Map.Entry.comparingByValue())
                     .map(Map.Entry::getKey)
-                    .map(this::formatCpf)
                     .collect(Collectors.toList());
 
             List<Client> clients = getAll();
-            clients.forEach(c -> c.setCpf(formatCpf(c.getCpf())));
 
             List<Client> loyalClients = clients
                     .stream()
@@ -125,12 +125,7 @@ public class ClientService {
     }
 
     private boolean isPurchaseFromClient(String clientCpf, String purchaseCpf) {
-        return formatCpf(clientCpf).equals(formatCpf(purchaseCpf));
+        return clientCpf.equals(purchaseCpf);
     }
 
-    private String formatCpf(String cpf) {
-        if (cpf.length() != 14) cpf = cpf.substring(cpf.length() - 14);
-
-        return cpf.replaceAll("\\.|-", "");
-    }
 }

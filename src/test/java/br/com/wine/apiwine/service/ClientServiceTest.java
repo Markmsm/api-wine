@@ -227,7 +227,7 @@ public class ClientServiceTest {
 
         //When:
         Throwable ex = assertThrows(NoSuchElementException.class, () -> {
-            Wine wine = clientService.getRecommendedWine("000.000.000-08");
+            Wine wine = clientService.getRecommendedWine("00000000008");
         });
 
         //Then:
@@ -237,7 +237,7 @@ public class ClientServiceTest {
     @Test
     void getRecommendedWineShouldReturnRecommendedWine() {
         //Given:
-        String fakeCPF = "000.000.000-02";
+        String fakeCPF = "00000000002";
         Wine expectedWine = new WineCreator().getFakeWines().get(0);
         when(mockedPurchaseService.getClientPurchases(fakeCPF)).thenReturn(getPurchasesOfClient(fakeCPF));
 

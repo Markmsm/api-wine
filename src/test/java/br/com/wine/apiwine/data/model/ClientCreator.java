@@ -17,31 +17,31 @@ public class ClientCreator {
 
         client1.setId(1);
         client1.setName("Vinicius");
-        client1.setCpf("000.000.000-01");
+        client1.setCpf("00000000001");
 
         client2.setId(2);
         client2.setName("Marcos");
-        client2.setCpf("000.000.000-02");
+        client2.setCpf("00000000002");
 
         client3.setId(3);
         client3.setName("Gustavo");
-        client3.setCpf("000.000.000-03");
+        client3.setCpf("00000000003");
 
         client4.setId(4);
         client4.setName("Matheus");
-        client4.setCpf("000.000.000-04");
+        client4.setCpf("00000000004");
 
         client5.setId(5);
         client5.setName("Mark");
-        client5.setCpf("000.000.000-05");
+        client5.setCpf("00000000005");
 
         client6.setId(6);
         client6.setName("Junesval");
-        client6.setCpf("000.000.000-06");
+        client6.setCpf("00000000006");
 
         client8.setId(8);
         client8.setName("Beatriz");
-        client8.setCpf("000.000.000-08");
+        client8.setCpf("00000000008");
 
         clients.add(client1);
         clients.add(client2);
@@ -55,7 +55,6 @@ public class ClientCreator {
     }
 
     static public List<Client> getFakeClientsEmpty() {
-        List<Client> clients = new ArrayList<>();
-        return clients;
+        return new ArrayList<>();
     }
 }

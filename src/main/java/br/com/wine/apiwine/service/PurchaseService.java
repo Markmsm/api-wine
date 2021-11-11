@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
+import static br.com.wine.apiwine.service.CpfFormatter.formatCpf;
+
 public class PurchaseService {
 
     PurchaseRepository purchaseRepository;
@@ -21,6 +23,8 @@ public class PurchaseService {
 
         if (purchases.isEmpty()) throw new NoSuchElementException("There is no purchase!");
 
+        purchases.forEach(p -> p.setCliente(formatCpf(p.getCliente())));
+
         return purchases;
     }
 
@@ -28,16 +32,11 @@ public class PurchaseService {
         try {
             return getAll()
                     .stream()
-                    .filter(p -> formatCpf(cpf).equals(formatCpf(p.getCliente())))
+                    .filter(p -> cpf.equals(p.getCliente()))
                     .collect(Collectors.toList());
         } catch (NoSuchElementException ex) {
             return new ArrayList<>();
         }
     }
 
-    private String formatCpf(String cpf) {
-        if (cpf.length() != 14) cpf = cpf.substring(cpf.length() - 14);
-
-        return cpf.replaceAll("\\.|-", "");
-    }
 }

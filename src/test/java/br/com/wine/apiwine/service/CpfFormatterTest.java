@@ -9,11 +9,58 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CpfFormatterTest {
 
-    //somente pontos
-    //passando null
+    @Test
+    void formatCpfShouldThrowExceptionIfHasJustDots() {
+        //Given:
+        String fakeCpf = "...";
+
+        //When:
+        Throwable ex = assertThrows(NumberFormatException.class, () -> {
+            String cpf = formatCpf(fakeCpf);
+        });
+
+        //Then:
+        assertThat(ex.getMessage(), is("This cpf is not valid!"));
+    }
 
     @Test
-    void formatCpfTesteeera() {
+    void formatCpfShouldThrowExceptionIfHasJustHyphen() {
+        //Given:
+        String fakeCpf = "---";
+
+        //When:
+        Throwable ex = assertThrows(NumberFormatException.class, () -> {
+            String cpf = formatCpf(fakeCpf);
+        });
+
+        //Then:
+        assertThat(ex.getMessage(), is("This cpf is not valid!"));
+    }
+
+    @Test
+    void formatCpfShouldThrowExceptionIfCpfIsEmptyString() {
+        //When:
+        Throwable ex = assertThrows(NumberFormatException.class, () -> {
+            String cpf = formatCpf("");
+        });
+
+        //Then:
+        assertThat(ex.getMessage(), is("This cpf is not valid!"));
+    }
+
+    @Test
+    void formatCpfShouldThrowExceptionIfCpfIsNull() {
+        //When:
+        Throwable ex = assertThrows(NumberFormatException.class, () -> {
+            String cpf = formatCpf(null);
+        });
+
+        //Then:
+        assertThat(ex.getMessage(), is("This cpf is not valid!"));
+    }
+
+    @Test
+    void formatCpfShouldThrowExceptionIfHasLetters() {
         //Given:
         String fakeCpf = "testing cpf formatter";
 

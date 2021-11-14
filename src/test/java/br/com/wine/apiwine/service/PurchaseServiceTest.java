@@ -1,7 +1,6 @@
 package br.com.wine.apiwine.service;
 
 import br.com.wine.apiwine.data.model.Purchase;
-import br.com.wine.apiwine.data.model.PurchaseCreator;
 import br.com.wine.apiwine.repository.PurchaseRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,7 +10,10 @@ import java.util.NoSuchElementException;
 
 import static br.com.wine.apiwine.data.model.PurchaseCreator.getFakePurchases;
 import static br.com.wine.apiwine.data.model.PurchaseCreator.getFakePurchasesEmpty;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -38,7 +40,7 @@ public class PurchaseServiceTest {
         });
 
         //Then:
-        assertEquals("There is no purchase!", ex.getMessage());
+        assertThat(ex.getMessage(), is("There is no purchase!"));
     }
 
     @Test
@@ -51,8 +53,7 @@ public class PurchaseServiceTest {
         List<Purchase> purchases = purchaseService.getAll();
 
         //Then:
-        assertEquals(expectedPurchases.size(), purchases.size());
-        assertTrue(purchases.containsAll(expectedPurchases));
+        assertThat(purchases, is(expectedPurchases));
     }
 
     @Test
@@ -64,7 +65,8 @@ public class PurchaseServiceTest {
         List<Purchase> purchases = purchaseService.getClientPurchases("000.000.000-08");
 
         //Then:
-        assertTrue(purchases.isEmpty());
+        assertThat(purchases, empty());
+//        assertTrue(purchases.isEmpty());
     }
 
     @Test
@@ -76,7 +78,8 @@ public class PurchaseServiceTest {
         List<Purchase> purchases = purchaseService.getClientPurchases("000.000.000-08");
 
         //Then:
-        assertTrue(purchases.isEmpty());
+        assertThat(purchases, empty());
+//        assertTrue(purchases.isEmpty());
     }
 
     @Test
@@ -89,8 +92,8 @@ public class PurchaseServiceTest {
         List<Purchase> purchases = purchaseService.getClientPurchases(clientCpf);
 
         //Then:
-        assertEquals(2, purchases.size());
-        assertEquals(clientCpf, purchases.get(0).getCliente());
-        assertEquals(clientCpf, purchases.get(1).getCliente());
+        assertThat(purchases.size(), is(2));
+        assertThat(purchases.get(0).getCliente(), is(clientCpf));
+        assertThat(purchases.get(1).getCliente(), is(clientCpf));
     }
 }

@@ -71,7 +71,7 @@ public class ClientService {
 
             return clientWithHighestBuy.get();
         } catch (NoSuchElementException ex) {
-            throw new NoSuchElementException("There are no client or purchase in" + year);
+            throw new NoSuchElementException("There are no client or purchase in " + year);
         }
     }
 

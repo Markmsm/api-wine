@@ -10,6 +10,8 @@ import java.util.NoSuchElementException;
 
 import static br.com.wine.apiwine.data.model.ClientCreator.*;
 import static br.com.wine.apiwine.data.model.PurchaseCreator.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -38,7 +40,7 @@ public class ClientServiceTest {
         });
 
         //Then:
-        assertEquals("There is no client!", ex.getMessage());
+        assertThat(ex.getMessage(), is("There is no client!"));
     }
 
     @Test
@@ -51,8 +53,7 @@ public class ClientServiceTest {
         List<Client> clients = clientService.getAll();
 
         //Then:
-        assertEquals(expectedClients.size(), clients.size());
-        assertTrue(clients.containsAll(expectedClients));
+        assertThat(clients, is(expectedClients));
     }
 
     @Test
@@ -65,7 +66,8 @@ public class ClientServiceTest {
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
         //Then:
-        assertTrue(clients.isEmpty());
+        assertThat(clients, empty());
+//        assertTrue(clients.isEmpty());
     }
 
     @Test
@@ -78,7 +80,8 @@ public class ClientServiceTest {
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
         //Then:
-        assertTrue(clients.isEmpty());
+        assertThat(clients, empty());
+        //assertTrue(clients.isEmpty());
     }
 
     @Test
@@ -92,9 +95,8 @@ public class ClientServiceTest {
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
         //Then:
-        assertEquals(expectedClients.size(), clients.size());
-        assertEquals(expectedClients.get(6).getId(), clients.get(5).getId());
-        assertEquals(expectedClients.get(4).getId(), clients.get(6).getId());
+        assertThat(clients.get(5).getId(), is(expectedClients.get(6).getId()));
+        assertThat(clients.get(6).getId(), is(expectedClients.get(4).getId()));
     }
 
     @Test
@@ -108,6 +110,8 @@ public class ClientServiceTest {
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
         //Then:
+//        assertThat(clients, is(expectedClients));
+        //@Todo: criar métodos para retornar fakeClients ordenados para este teste
         assertEquals(expectedClients.size(), clients.size());
         assertEquals(expectedClients.get(1).getId(), clients.get(0).getId());
         assertEquals(expectedClients.get(5).getId(), clients.get(1).getId());
@@ -129,7 +133,7 @@ public class ClientServiceTest {
         });
 
         //Then:
-        assertEquals("There are no client or purchase in" + year, ex.getMessage());
+        assertThat(ex.getMessage(), is("There are no client or purchase in " + year));
     }
 
     @Test
@@ -145,7 +149,7 @@ public class ClientServiceTest {
         });
 
         //Then:
-        assertEquals("There are no client or purchase in" + year, ex.getMessage());
+        assertThat(ex.getMessage(), is("There are no client or purchase in " + year));
     }
 
     @Test
@@ -161,7 +165,7 @@ public class ClientServiceTest {
         });
 
         //Then:
-        assertEquals("There are no client or purchase in" + year, ex.getMessage());
+        assertThat(ex.getMessage(), is("There are no client or purchase in " + year));
     }
 
     @Test
@@ -175,7 +179,7 @@ public class ClientServiceTest {
         int clientWithMaxBuyId = clientService.getClientWithMaxBuyInYear("2016").getId();
 
         //Then:
-        assertEquals(expectedClientId, clientWithMaxBuyId);
+        assertThat(clientWithMaxBuyId, is(expectedClientId));
     }
 
     @Test
@@ -188,7 +192,8 @@ public class ClientServiceTest {
         List<Client> clients = clientService.getLoyalClients();
 
         //Then:
-        assertTrue(clients.isEmpty());
+        assertThat(clients, empty());
+//        assertTrue(clients.isEmpty());
     }
 
     @Test
@@ -201,6 +206,7 @@ public class ClientServiceTest {
         List<Client> clients = clientService.getLoyalClients();
 
         //Then:
+        assertThat(clients, empty());
         assertTrue(clients.isEmpty());
     }
 
@@ -215,6 +221,8 @@ public class ClientServiceTest {
         List<Client> loyalClients = clientService.getLoyalClients();
 
         //Then:
+        //@Todo: criar métodos para retornar fakeLoyalClients ordenados para este teste
+//        assertThat(loyalClients, is(expectedClients));
         assertEquals(2, loyalClients.size());
         assertEquals(expectedClients.get(1).getId(), loyalClients.get(0).getId());
         assertEquals(expectedClients.get(2).getId(), loyalClients.get(1).getId());
@@ -231,20 +239,20 @@ public class ClientServiceTest {
         });
 
         //Then:
-        assertEquals("This client haven't purchase yet!", ex.getMessage());
+        assertThat(ex.getMessage(), is("This client haven't purchase yet!"));
     }
 
     @Test
     void getRecommendedWineShouldReturnRecommendedWine() {
         //Given:
         String fakeCPF = "00000000002";
-        Wine expectedWine = new WineCreator().getFakeWines().get(0);
+        String expectedWineCode = new WineCreator().getFakeWines().get(0).getCodigo();
         when(mockedPurchaseService.getClientPurchases(fakeCPF)).thenReturn(getPurchasesOfClient(fakeCPF));
 
         //When:
-        Wine wine = clientService.getRecommendedWine(fakeCPF);
+        String wineCode = clientService.getRecommendedWine(fakeCPF).getCodigo();
 
         //Then:
-        assertEquals(expectedWine.getCodigo(), wine.getCodigo());
+        assertThat(wineCode, is(expectedWineCode));
     }
 }

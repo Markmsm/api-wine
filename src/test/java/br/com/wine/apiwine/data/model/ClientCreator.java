@@ -57,4 +57,19 @@ public class ClientCreator {
     static public List<Client> getFakeClientsEmpty() {
         return new ArrayList<>();
     }
+
+    static public List<Client> getFakeClientsSortedByMaxSpent() {
+        List<Client> fakeClients = getFakeClients();
+        List<Client> sortedClients = new ArrayList<>();
+
+        sortedClients.add(fakeClients.get(1));
+        sortedClients.add(fakeClients.get(5));
+        sortedClients.add(fakeClients.get(0));
+        sortedClients.add(fakeClients.get(2));
+        sortedClients.add(fakeClients.get(3));
+        sortedClients.add(fakeClients.get(6));
+        sortedClients.add(fakeClients.get(4));
+
+        return sortedClients;
+    }
 }

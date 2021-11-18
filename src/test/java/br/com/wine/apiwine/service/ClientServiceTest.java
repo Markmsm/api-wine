@@ -104,20 +104,13 @@ public class ClientServiceTest {
         //Given:
         when(mockedClientRepository.getAll()).thenReturn(getFakeClients());
         when(mockedPurchaseService.getAll()).thenReturn(getFakePurchases());
-        List<Client> expectedClients = getFakeClients();
+        List<Client> expectedClients = getFakeClientsSortedByMaxSpent();
 
         //When:
         List<Client> clients = clientService.getClientsSortedByMaxSpent();
 
         //Then:
-//        assertThat(clients, is(expectedClients));
-        //@Todo: criar métodos para retornar fakeClients ordenados para este teste
-        assertEquals(expectedClients.size(), clients.size());
-        assertEquals(expectedClients.get(1).getId(), clients.get(0).getId());
-        assertEquals(expectedClients.get(5).getId(), clients.get(1).getId());
-        assertEquals(expectedClients.get(0).getId(), clients.get(2).getId());
-        assertEquals(expectedClients.get(2).getId(), clients.get(3).getId());
-        assertEquals(expectedClients.get(3).getId(), clients.get(4).getId());
+        assertThat(clients, is(expectedClients));
     }
 
     @Test
@@ -207,7 +200,7 @@ public class ClientServiceTest {
 
         //Then:
         assertThat(clients, empty());
-        assertTrue(clients.isEmpty());
+//        assertTrue(clients.isEmpty());
     }
 
     @Test

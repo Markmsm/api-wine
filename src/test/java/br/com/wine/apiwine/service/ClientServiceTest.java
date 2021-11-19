@@ -208,17 +208,13 @@ public class ClientServiceTest {
         //Given:
         when(mockedClientRepository.getAll()).thenReturn(getFakeClients());
         when(mockedPurchaseService.getAll()).thenReturn(getFakePurchases());
-        List<Client> expectedClients = getFakeClients();
+        List<Client> expectedClients = getFakeLoyalClients();
 
         //When:
         List<Client> loyalClients = clientService.getLoyalClients();
 
         //Then:
-        //@Todo: criar métodos para retornar fakeLoyalClients ordenados para este teste
-//        assertThat(loyalClients, is(expectedClients));
-        assertEquals(2, loyalClients.size());
-        assertEquals(expectedClients.get(1).getId(), loyalClients.get(0).getId());
-        assertEquals(expectedClients.get(2).getId(), loyalClients.get(1).getId());
+        assertThat(loyalClients, is(expectedClients));
     }
 
     @Test

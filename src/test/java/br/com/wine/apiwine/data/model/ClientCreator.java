@@ -72,4 +72,14 @@ public class ClientCreator {
 
         return sortedClients;
     }
+
+    static public List<Client> getFakeLoyalClients() {
+        List<Client> fakeClients = getFakeClients();
+        List<Client> loyalClients = new ArrayList<>();
+
+        loyalClients.add(fakeClients.get(1));
+        loyalClients.add(fakeClients.get(2));
+
+        return loyalClients;
+    }
 }
